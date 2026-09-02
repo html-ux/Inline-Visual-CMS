@@ -11,7 +11,7 @@
     <div class="login-panel">
       <div class="brand">Inline Visual CMS</div>
       <h1>リポジトリに接続</h1>
-      <p class="muted">GitHub Token はブラウザの localStorage にのみ保存されます。</p>
+      <p class="muted">GitHub Token はブラウザの localStorage にのみ保存されます（サーバーには送りません）。</p>
       <label>Owner（ユーザー名 or org）<input id="cfg-owner" placeholder="your-name" autocomplete="username"></label>
       <label>Repository<input id="cfg-repo" placeholder="my-site"></label>
       <label>Branch<input id="cfg-branch" value="main"></label>
@@ -25,7 +25,17 @@
       <label class="check"><input type="checkbox" id="cfg-remember" checked> Token をこのブラウザに保存</label>
       <button type="button" id="btn-connect" class="btn primary block">接続</button>
       <p id="login-msg" class="msg"></p>
-      <p class="muted small">必要権限: Contents Read and write / 対象リポジトリを選択</p>
+      <details class="muted small" style="margin-top:1rem">
+        <summary>Token の作り方</summary>
+        <ol style="padding-left:1.2rem;line-height:1.5">
+          <li>GitHub → Settings → Developer settings</li>
+          <li><strong>Fine-grained personal access tokens</strong> → Generate</li>
+          <li>Repository access で編集したいリポジトリを選択</li>
+          <li>Permissions → Contents: <strong>Read and write</strong></li>
+          <li>発行された <code>github_pat_...</code> を上に貼る</li>
+        </ol>
+        <p>※ 純粋な静的ページのため「GitHubでログイン」ボタン（OAuth）は、Client Secret をブラウザに置けない制約で未対応です。PAT 方式が安全な代替です。</p>
+      </details>
     </div>
   </div>
 
