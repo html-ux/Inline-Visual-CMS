@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inline Visual CMS</title>
+<link rel="stylesheet" href="assets/css/cms.css">
+</head>
+<body class="cms-app">
+  <div id="view-login" class="view">
+    <div class="login-panel">
+      <div class="brand">Inline Visual CMS</div>
+      <h1>リポジトリに接続</h1>
+      <p class="muted">GitHub Token はブラウザの localStorage にのみ保存されます。</p>
+      <label>Owner（ユーザー名 or org）<input id="cfg-owner" placeholder="your-name" autocomplete="username"></label>
+      <label>Repository<input id="cfg-repo" placeholder="my-site"></label>
+      <label>Branch<input id="cfg-branch" value="main"></label>
+      <label>GitHub Token（PAT）
+        <input id="cfg-token" type="password" placeholder="github_pat_... または ghp_..." autocomplete="off">
+      </label>
+      <label>表示名（任意）<input id="cfg-name" placeholder="Your Name"></label>
+      <label>バックアップ用リポジトリ（任意）
+        <input id="cfg-backup" placeholder="my-site-backup（空ならスキップ）">
+      </label>
+      <label class="check"><input type="checkbox" id="cfg-remember" checked> Token をこのブラウザに保存</label>
+      <button type="button" id="btn-connect" class="btn primary block">接続</button>
+      <p id="login-msg" class="msg"></p>
+      <p class="muted small">必要権限: Contents Read and write / 対象リポジトリを選択</p>
+    </div>
+  </div>
+
+  <div id="view-dash" class="view hidden">
+    <header class="app-bar">
+      <a class="brand" href="index.html">Inline Visual CMS</a>
+      <div class="app-bar-right">
+        <span id="dash-repo" class="pill"></span>
+        <span id="dash-user" class="pill"></span>
+        <button type="button" id="btn-disconnect" class="btn ghost">接続解除</button>
+      </div>
+    </header>
+    <main class="dash-main">
+      <div class="row-between">
+        <h2>ページ一覧</h2>
+        <button type="button" id="btn-refresh" class="btn ghost">再読み込み</button>
+      </div>
+      <p id="dash-status" class="muted">読み込み中…</p>
+      <div id="page-grid" class="page-grid"></div>
+    </main>
+  </div>
+
+  <div id="view-editor" class="view hidden">
+    <header class="editor-bar">
+      <div>
+        <button type="button" id="btn-back" class="btn ghost">← 一覧</button>
+        <strong id="ed-title">編集</strong>
+        <span id="ed-path" class="mono muted"></span>
+      </div>
+      <div class="editor-actions">
+        <button type="button" id="btn-undo" class="btn ghost">↶</button>
+        <button type="button" id="btn-redo" class="btn ghost">↷</button>
+        <button type="button" id="btn-mode-visual" class="btn ghost">ビジュアル</button>
+        <button type="button" id="btn-mode-code" class="btn ghost">コード</button>
+        <input id="commit-msg" placeholder="コミットメッセージ（必須）" style="min-width:12rem">
+        <button type="button" id="btn-save" class="btn primary">保存</button>
+      </div>
+    </header>
+    <div class="editor-body">
+      <aside class="rail">
+        <section class="rail-panel">
+          <h3 class="rail-h">選択中</h3>
+          <p id="sel-info" class="muted small">要素をクリックして選択</p>
+          <div class="row2">
+            <button type="button" id="btn-dup" class="btn ghost">複製</button>
+            <button type="button" id="btn-del" class="btn danger">削除</button>
+          </div>
+        </section>
+        <section class="rail-panel">
+          <h3 class="rail-h">要素の見た目</h3>
+          <label>背景色<input type="color" id="p-bg" value="#ffffff"></label>
+          <label>文字サイズ <span id="p-size-v">16</span>px
+            <input type="range" id="p-size" min="10" max="72" value="16">
+          </label>
+          <label>太さ
+            <select id="p-weight">
+              <option value="">変更なし</option>
+              <option value="400">通常</option>
+              <option value="600">やや太字</option>
+              <option value="700">太字</option>
+            </select>
+          </label>
+          <label>角丸 <span id="p-radius-v">0</span>px
+            <input type="range" id="p-radius" min="0" max="48" value="0">
+          </label>
+          <label>余白(padding) <span id="p-pad-v">0</span>px
+            <input type="range" id="p-pad" min="0" max="64" value="0">
+          </label>
+          <label>外側余白(margin) <span id="p-margin-v">0</span>px
+            <input type="range" id="p-margin" min="0" max="64" value="0">
+          </label>
+          <label>枠線の太さ <span id="p-border-w-v">0</span>px
+            <input type="range" id="p-border-w" min="0" max="12" value="0">
+          </label>
+          <label>枠線色<input type="color" id="p-border-c" value="#333333"></label>
+          <button type="button" id="btn-apply-style" class="btn primary block">要素に適用</button>
+        </section>
+        <section class="rail-panel body-bg-box">
+          <h3 class="rail-h">ページ全体の背景</h3>
+          <p class="muted small">body 全体（子要素の背景とは別）</p>
+          <label>種類
+            <select id="body-bg-mode">
+              <option value="keep-site">変更しない / クリア</option>
+              <option value="solid">単色</option>
+              <option value="linear">2色グラデ（直線）</option>
+              <option value="radial">2色グラデ（円形）</option>
+              <option value="image">画像URL</option>
+              <option value="custom">カスタムCSS</option>
+              <option value="warm">暖色プリセット</option>
+              <option value="cool">寒色プリセット</option>
+              <option value="night">ナイトプリセット</option>
+              <option value="forest">森プリセット</option>
+            </select>
+          </label>
+          <label>色1<input type="color" id="body-bg-color" value="#f8fafc"></label>
+          <label>色2<input type="color" id="body-bg-color2" value="#e2e8f0"></label>
+          <label>角度 <span id="body-bg-angle-v">135</span>°
+            <input type="range" id="body-bg-angle" min="0" max="360" value="135">
+          </label>
+          <label>画像URL<input type="text" id="body-bg-image" placeholder="https://..."></label>
+          <label>カスタムCSS<textarea id="body-bg-custom" rows="2" placeholder="linear-gradient(...)"></textarea></label>
+          <button type="button" id="btn-body-bg" class="btn ghost block">ページ背景を適用</button>
+        </section>
+        <section class="rail-panel">
+          <h3 class="rail-h">ブロック追加</h3>
+          <div id="block-grid" class="block-grid"></div>
+        </section>
+        <section class="rail-panel">
+          <h3 class="rail-h">ヒント</h3>
+          <ul class="tips">
+            <li><code>data-lock="true"</code> は編集不可</li>
+            <li>Ctrl+Z / Ctrl+Y で戻す・進む</li>
+            <li>保存前にコミットメッセージ必須</li>
+          </ul>
+        </section>
+      </aside>
+      <div class="stage-wrap">
+        <iframe id="preview-frame" title="preview"></iframe>
+        <textarea id="code-area" class="code-area hidden" spellcheck="false"></textarea>
+      </div>
+    </div>
+    <div id="status" class="status-bar">準備完了</div>
+  </div>
+
+  <div id="rt-toolbar" class="rt-toolbar">
+    <button type="button" data-cmd="bold"><b>B</b></button>
+    <button type="button" data-cmd="italic"><i>I</i></button>
+    <button type="button" data-cmd="underline"><u>U</u></button>
+    <label class="rt-color">文字<input type="color" id="rt-color" value="#111111"></label>
+    <label class="rt-color">マーカー<input type="color" id="rt-hilite" value="#fff59d"></label>
+  </div>
+
+  <script src="assets/js/cms.js"></script>
+</body>
+</html>
